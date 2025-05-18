@@ -14,18 +14,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Atlas Connection
+// MongoDB Connection
 const connectWithRetry = async () => {
-    const MONGODB_URI = process.env.MONGODB_URI;
-    console.log('Attempting to connect to MongoDB Atlas...');
+    const MONGODB_URI = 'mongodb://localhost:27017/nextstep';
+    console.log('Attempting to connect to MongoDB...');
     try {
         const conn = await mongoose.connect(MONGODB_URI, {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-            retryWrites: true,
-            w: 'majority'
+            useUnifiedTopology: true
         });
-        console.log(`MongoDB Atlas Connected: ${conn.connection.host}`);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error('MongoDB connection error:', error);
         console.log('Retrying connection in 5 seconds...');
@@ -50,13 +48,13 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // Routes with error handling
-app.use('/users', userRoutes);
-app.use('/mentors', mentorRoutes);
-app.use('/roadmaps', roadmapRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/mentors', mentorRoutes);
+app.use('/api/roadmaps', roadmapRoutes);
 
 // Mentor Dashboard Routes
 import mentorDashboardRoutes from './routes/mentorDashboardRoutes.js';
-app.use('/mentor', mentorDashboardRoutes);
+app.use('/api/mentor', mentorDashboardRoutes);
 
 // Test route
 app.get('/', (req, res) => {
@@ -77,18 +75,28 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+let currentPort = PORT;
+const MAX_PORT_RETRIES = 5;
+let portRetries = 0;
 
-// Handle server errors
-server.on('error', (error) => {
-    console.error('Server error:', error);
-    if (error.code === 'EADDRINUSE') {
-        console.log('Port is busy, retrying with different port...');
-        setTimeout(() => {
+const startServer = () => {
+    const server = app.listen(currentPort, () => {
+        console.log(`Server is running on port ${currentPort}`);
+        portRetries = 0; // Reset retries on successful start
+    });
+
+    server.on('error', (error) => {
+        if (error.code === 'EADDRINUSE' && portRetries < MAX_PORT_RETRIES) {
+            console.log(`Port ${currentPort} is busy, trying ${currentPort + 1}...`);
+            currentPort++;
+            portRetries++;
             server.close();
-            server.listen(PORT + 1);
-        }, 1000);
-    }
-});
+            startServer();
+        } else {
+            console.error('Server error:', error);
+            process.exit(1);
+        }
+    });
+};
+
+startServer();

@@ -15,9 +15,17 @@ const Roadmaps = () => {
 
     const fetchRoadmaps = async () => {
         try {
+            setLoading(true);
             const response = await roadmapAPI.getAllRoadmaps();
-            setRoadmaps(response.data);
+            console.log('Roadmaps response:', response.data); // Debug log
+
+            if (!response.data || response.data.length === 0) {
+                setError('No roadmaps found. Please check back later.');
+            } else {
+                setRoadmaps(response.data);
+            }
         } catch (err) {
+            console.error('Error fetching roadmaps:', err);
             setError('Failed to load roadmaps. Please try again later.');
         } finally {
             setLoading(false);
@@ -27,8 +35,8 @@ const Roadmaps = () => {
     const filteredRoadmaps = roadmaps
         .filter(roadmap =>
             (selectedCategory === 'all' || roadmap.category === selectedCategory) &&
-            (roadmap.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                roadmap.description.toLowerCase().includes(searchQuery.toLowerCase()))
+            (roadmap.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                roadmap.description?.toLowerCase().includes(searchQuery.toLowerCase()))
         );
 
     if (loading) {

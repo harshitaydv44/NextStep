@@ -137,14 +137,14 @@ const Mentors = () => {
     .filter(mentor =>
       (activeDomain === 'all' || mentor.domain === activeDomain) &&
       (searchQuery === '' ||
-        mentor.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mentor.expertise.toLowerCase().includes(searchQuery.toLowerCase()))
+        mentor.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        mentor.expertise?.toLowerCase().includes(searchQuery.toLowerCase()))
     )
     .sort((a, b) => {
       if (sortBy === 'experience') {
-        return b.experience - a.experience;
+        return (b.experience || 0) - (a.experience || 0);
       } else {
-        return a.fullName.localeCompare(b.fullName);
+        return (a.fullName || '').localeCompare(b.fullName || '');
       }
     });
 

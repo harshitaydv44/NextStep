@@ -65,8 +65,6 @@ export const authAPI = {
     login: (credentials) => api.post('/users/login', credentials),
     register: (userData) => api.post('/users/register', userData),
     getCurrentUser: () => api.get('/users/me'),
-
-    // ✅ Added this function
     updateUserProfile: (userData) => api.put('/users/update-profile', userData),
 };
 
