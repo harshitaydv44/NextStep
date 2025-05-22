@@ -84,3 +84,32 @@ export const bookMentorshipSession = async (req, res) => {
         res.status(500).json({ message: 'Error booking session', error: err.message });
     }
 };
+
+// ✅ New function to send a message to mentor
+export const sendMessageToMentor = async (req, res) => {
+    try {
+        const { mentorId } = req.params;
+        const { message } = req.body;
+        const senderId = req.user._id; // From auth middleware
+
+        console.log('Sending message to mentor:', { mentorId, message, senderId });
+
+        const mentor = await Mentor.findById(mentorId);
+        if (!mentor) {
+            return res.status(404).json({ message: 'Mentor not found' });
+        }
+
+        // For now, we simulate sending a message
+        res.status(200).json({
+            message: 'Message sent successfully',
+            data: {
+                mentorId,
+                senderId,
+                message
+            }
+        });
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).json({ message: 'Error sending message', error: error.message });
+    }
+};

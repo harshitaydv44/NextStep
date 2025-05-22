@@ -2,19 +2,36 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 
 const protect = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1];
+    let token;
 
-        if (!token) {
-            return res.status(401).json({ message: 'No token authorization denied' });
+    try {
+        // Check if Authorization header exists and starts with 'Bearer'
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith('Bearer')
+        ) {
+            // Get token from header
+            token = req.headers.authorization.split(' ')[1];
+
+            // Verify token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Find user by decoded token ID
+            req.user = await User.findById(decoded.id).select('-password');
+
+            // Proceed to the next middleware/controller
+            return next();
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select("-password");
-        next();
+        // If no token is found
+        return res.status(401).json({ message: 'Not authorized, no token' });
 
     } catch (err) {
-        res.status(401).json({ message: 'Invalid Token', error: err.message });
+        // If token is invalid or error occurs
+        return res.status(401).json({
+            message: 'Not authorized, token failed',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+        });
     }
 };
 

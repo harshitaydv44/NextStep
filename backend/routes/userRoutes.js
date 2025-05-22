@@ -8,7 +8,7 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 // Protected route to update user profile
-router.put('/profile', protect, updateUserProfile);
+router.put('/update-profile', protect, updateUserProfile);
 
 // Protected route to get current user profile
 router.get('/me', protect, getCurrentUser);
