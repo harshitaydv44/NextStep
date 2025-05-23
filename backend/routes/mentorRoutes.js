@@ -7,6 +7,6 @@ const router = express.Router();
 router.post('/add', addMentor);
 router.get('/all', getMentors);
 router.post('/:mentorId/book', protect, bookMentorshipSession);
-router.post('/:mentorsId/message',protect, sendMessageToMentor);
+router.post('/:mentorId/message', protect, sendMessageToMentor);
 
 export default router;
