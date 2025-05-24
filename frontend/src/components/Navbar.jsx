@@ -45,19 +45,22 @@ const Navbar = () => {
                         </span>
                     </Link>
 
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        <div className="hidden md:flex items-center space-x-6">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    to={link.path}
-                                    className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200"
-                                >
-                                    {link.text}
-                                </Link>
-                            ))}
-                        </div>
+                    {/* Desktop Navigation Links */}
+                    <div className="hidden md:flex items-center space-x-6">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200"
+                            >
+                                {link.text}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Desktop Auth Buttons & Mobile Menu Toggle */}
+                    <div className="flex items-center">
+                        {/* Desktop Auth Buttons */}
                         <div className="hidden md:flex items-center space-x-4">
                             {user ? (
                                 // If logged in
@@ -92,15 +95,15 @@ const Navbar = () => {
                                 </>
                             )}
                         </div>
-                    </div>
 
-                    {/* Mobile menu button */}
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="md:hidden rounded-lg p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-                    >
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
+                        {/* Mobile menu button */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="md:hidden rounded-lg p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                        >
+                            {isOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Navigation */}
