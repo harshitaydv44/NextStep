@@ -1,5 +1,7 @@
 import User from '../models/user.js';
 import Mentor from '../models/mentor.js';
+import SessionBooking from '../models/SessionBooking.js';
+import Message from '../models/Message.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -245,6 +247,54 @@ export const getCurrentUser = async (req, res) => {
         console.error('Get current user error:', error);
         res.status(500).json({ message: 'Error fetching user data' });
     }
+};
+export const getLearnerSessions = async (req, res) => {
+  try {
+    const sessions = await SessionBooking.find({ 
+      learnerId: req.user._id 
+    })
+    .select('-__v -createdAt -updatedAt') // Exclude unnecessary fields
+    .populate({
+      path: 'mentorId',
+      select: 'name avatar', // Include only necessary mentor fields
+    })
+    .sort({ date: -1 }) // Show newest first
+    .lean(); // Convert to plain JavaScript objects for better performance
+
+    // Ensure the link field is included and properly formatted
+    const formattedSessions = sessions.map(session => ({
+      ...session,
+      link: session.link || null, // Ensure link is always included, even if null
+    }));
+
+    res.status(200).json(formattedSessions);
+  } catch (error) {
+    console.error('Error fetching learner sessions:', error);
+    res.status(500).json({ 
+      message: 'Error fetching your sessions',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Get all messages for the logged-in learner
+// @route   GET /api/users/my-messages
+// @access  Private (Student)
+export const getLearnerMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ learnerId: req.user._id })
+      .populate({
+        path: 'mentorId',
+        model: 'Mentor', // Explicitly state the model
+        select: 'name avatar', // Get mentor's name and avatar
+      })
+      .sort({ updatedAt: -1 }); // Show recently replied-to first
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error('Error fetching learner messages:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
 };
 
 // Generate JWT

@@ -1,6 +1,7 @@
 import Mentor from '../models/mentor.js';
 import User from '../models/user.js';
 import SessionBooking from '../models/SessionBooking.js';
+import Message from '../models/Message.js';
 
 export const addMentor = async (req, res) => {
     try {
@@ -89,27 +90,55 @@ export const bookMentorshipSession = async (req, res) => {
 export const sendMessageToMentor = async (req, res) => {
     try {
         const { mentorId } = req.params;
-        const { message } = req.body;
-        const senderId = req.user._id; // From auth middleware
+        const { subject, message } = req.body;
+        const learnerId = req.user._id; // From auth middleware
 
-        console.log('Sending message to mentor:', { mentorId, message, senderId });
+        // Input validation
+        if (!subject || !message) {
+            return res.status(400).json({ 
+                message: 'Subject and message are required' 
+            });
+        }
 
+        console.log('Sending message to mentor:', { mentorId, subject, message, learnerId });
+
+        // Verify mentor exists
         const mentor = await Mentor.findById(mentorId);
         if (!mentor) {
             return res.status(404).json({ message: 'Mentor not found' });
         }
 
-        // For now, we simulate sending a message
-        res.status(200).json({
+        // Create the message with proper structure
+        const newMessage = new Message({
+            mentorId,
+            learnerId,
+            subject: subject.trim(),
+            messages: [{
+                from: 'learner',
+                text: message.trim(),
+                timestamp: new Date()
+            }]
+        });
+
+        await newMessage.save();
+
+        // Populate the response with user details
+        const populatedMessage = await Message.findById(newMessage._id)
+            .populate('learnerId', 'fullName email')
+            .populate('mentorId', 'name');
+
+        res.status(201).json({
+            success: true,
             message: 'Message sent successfully',
-            data: {
-                mentorId,
-                senderId,
-                message
-            }
+            data: populatedMessage
         });
     } catch (error) {
         console.error('Error sending message:', error);
-        res.status(500).json({ message: 'Error sending message', error: error.message });
+        res.status(500).json({ 
+            success: false,
+            message: 'Failed to send message',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
+

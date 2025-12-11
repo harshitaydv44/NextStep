@@ -95,5 +95,11 @@ export const mentorDashboardAPI = {
         api.put(`/mentor/sessions/${sessionId}/complete`),
 };
 
+export const learnerDashboardAPI = {
+  getSessions: () => api.get('/users/my-sessions'),
+  getMessages: () => api.get('/users/my-messages'),
+  // We can add a reply function here later
+};
+
 // Export base instance (optional for direct use)
 export default api;
