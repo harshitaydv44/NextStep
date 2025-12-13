@@ -47,7 +47,7 @@ const Footer = () => {
             <div className="mx-auto max-w-7xl px-6 py-12 md:py-16 lg:px-8">
                 <div className="xl:grid xl:grid-cols-3 xl:gap-8">
                     <div className="space-y-8">
-                        <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent">
                             Next Step
                         </Link>
                         <p className="text-gray-600 max-w-xs">
@@ -73,7 +73,7 @@ const Footer = () => {
                                 <ul className="mt-6 space-y-4">
                                     {navigation.main.map((item) => (
                                         <li key={item.name}>
-                                            <Link to={item.to} className="text-sm text-gray-600 hover:text-blue-600">
+                                            <Link to={item.to} className="text-sm text-gray-600 hover:text-primary-600">
                                                 {item.name}
                                             </Link>
                                         </li>
@@ -85,7 +85,7 @@ const Footer = () => {
                                 <ul className="mt-6 space-y-4">
                                     {navigation.resources.map((item) => (
                                         <li key={item.name}>
-                                            <Link to={item.to} className="text-sm text-gray-600 hover:text-blue-600">
+                                            <Link to={item.to} className="text-sm text-gray-600 hover:text-primary-600">
                                                 {item.name}
                                             </Link>
                                         </li>
@@ -98,7 +98,7 @@ const Footer = () => {
                             <ul className="mt-6 space-y-4">
                                 {navigation.legal.map((item) => (
                                     <li key={item.name}>
-                                        <Link to={item.to} className="text-sm text-gray-600 hover:text-blue-600">
+                                        <Link to={item.to} className="text-sm text-gray-600 hover:text-primary-600">
                                             {item.name}
                                         </Link>
                                     </li>
@@ -115,4 +115,4 @@ const Footer = () => {
     );
 };
 
-export default Footer; 
+export default Footer;

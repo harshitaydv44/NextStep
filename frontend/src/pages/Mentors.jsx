@@ -14,75 +14,6 @@ const DOMAIN_OPTIONS = [
   { id: 'Cloud Computing', name: 'Cloud Computing' },
 ];
 
-const mentors = [
-  {
-    id: 1,
-    name: 'Sarah Johnson',
-    role: 'Senior Frontend Developer',
-    company: 'Google',
-    avatar: '/images/mentors/sarah.jpg',
-    rating: 4.9,
-    sessions: 156,
-    skills: ['React', 'Vue', 'TypeScript'],
-    domain: 'web',
-  },
-  {
-    id: 2,
-    name: 'Michael Chen',
-    role: 'Mobile App Developer',
-    company: 'Apple',
-    avatar: '/images/mentors/michael.jpg',
-    rating: 4.8,
-    sessions: 98,
-    skills: ['iOS', 'Swift', 'React Native'],
-    domain: 'mobile',
-  },
-  {
-    id: 3,
-    name: 'Emily Rodriguez',
-    role: 'Data Scientist',
-    company: 'Microsoft',
-    avatar: '/images/mentors/emily.jpg',
-    rating: 4.9,
-    sessions: 124,
-    skills: ['Python', 'Machine Learning', 'SQL'],
-    domain: 'data',
-  },
-  {
-    id: 4,
-    name: 'David Kim',
-    role: 'Security Engineer',
-    company: 'Amazon',
-    avatar: '/images/mentors/david.jpg',
-    rating: 4.7,
-    sessions: 87,
-    skills: ['Cybersecurity', 'Network Security', 'Ethical Hacking'],
-    domain: 'security',
-  },
-  {
-    id: 5,
-    name: 'Lisa Wang',
-    role: 'Full Stack Developer',
-    company: 'Netflix',
-    avatar: '/images/mentors/lisa.jpg',
-    rating: 4.9,
-    sessions: 203,
-    skills: ['Node.js', 'React', 'MongoDB'],
-    domain: 'web',
-  },
-  {
-    id: 6,
-    name: 'James Wilson',
-    role: 'Android Developer',
-    company: 'Meta',
-    avatar: '/images/mentors/james.jpg',
-    rating: 4.8,
-    sessions: 145,
-    skills: ['Android', 'Kotlin', 'Java'],
-    domain: 'mobile',
-  },
-];
-
 const Mentors = () => {
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +82,7 @@ const Mentors = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -171,7 +102,7 @@ const Mentors = () => {
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto max-w-6xl px-4 py-4">
-          <Link to="/" className="inline-flex items-center text-gray-600 hover:text-purple-600">
+          <Link to="/" className="inline-flex items-center text-gray-600 hover:text-primary-600">
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Home
           </Link>
@@ -179,12 +110,12 @@ const Mentors = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-primary-600 to-secondary-500 text-white py-16 px-4">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Find Your Mentor
           </h1>
-          <p className="text-xl text-purple-100 max-w-2xl mx-auto">
+          <p className="text-xl text-secondary-100 max-w-2xl mx-auto">
             Connect with industry experts who can guide your career journey
           </p>
         </div>
@@ -200,7 +131,7 @@ const Mentors = () => {
             placeholder="Search by name or expertise..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-colors"
+            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-secondary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
           />
         </div>
 
@@ -212,7 +143,7 @@ const Mentors = () => {
               onClick={() => setActiveDomain(domain.id)}
               className={`px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
                 ${activeDomain === domain.id
-                  ? 'bg-purple-600 text-white'
+                  ? 'bg-primary-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
             >
@@ -229,7 +160,7 @@ const Mentors = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
+            className="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none"
           >
             <option value="experience">Sort by Experience</option>
             <option value="name">Sort by Name</option>

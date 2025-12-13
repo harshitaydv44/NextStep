@@ -65,7 +65,7 @@ const MessageModal = ({ isOpen, onClose, mentor }) => {
                         alt={mentor?.fullName}
                         className="w-12 h-12 rounded-full object-cover"
                         onError={(e) => {
-                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor?.fullName)}&background=6366f1&color=fff`;
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor?.fullName)}&background=8B4513&color=fff`;
                         }}
                     />
                     <div>

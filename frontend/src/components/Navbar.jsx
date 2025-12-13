@@ -76,39 +76,48 @@ const Navbar = () => {
       };
     }
 
+    // For students, always return the learner dashboard
     return {
-      path: '/dashboard',
-      text: 'Dashboard',
+      path: '/my-dashboard',
+      text: 'My Dashboard',
       icon: <LayoutDashboard className="mr-3 h-5 w-5" />,
     };
   }, [user]);
 
   const dashboardLink = getDashboardLink();
-  
+
   // Get display name with fallbacks
   const displayName = user?.fullName || user?.username || user?.email?.split('@')[0] || 'User';
 
   // Handle user logout
   const handleLogout = useCallback(() => {
+    // Clear all auth data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setUser(null);
+
+    // Dispatch custom event to notify other components
     window.dispatchEvent(new Event('authChange'));
-    navigate('/login');
+
+    // Close mobile menu if open
     setIsOpen(false);
+
+    // Navigate to home page
+    navigate('/', { replace: true });
+
+    // Force a full page reload to reset all states
     window.location.reload();
   }, [navigate]);
 
   return (
-    <nav 
-      className="backdrop-blur-md shadow-sm fixed w-full top-0 z-50 border-b border-gray-100" 
+    <nav
+      className="backdrop-blur-md shadow-sm fixed w-full top-0 z-50 border-b border-gray-100"
       style={{ backgroundColor: 'rgba(245, 241, 232, 0.8)' }}
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link
-            to={user ? (user.role === 'teacher' ? '/mentor-dashboard' : '/dashboard') : '/'}
+            to={user ? (user.role === 'teacher' ? '/mentor-dashboard' : '/my-dashboard') : '/'}
             className="flex items-center space-x-2"
             onClick={() => setIsOpen(false)}
           >
@@ -259,7 +268,7 @@ const Navbar = () => {
                 <div className="px-4 py-2 text-sm text-gray-500">
                   Signed in as <span className="font-bold">{displayName}</span>
                 </div>
-                
+
                 {/* Dashboard Link */}
                 {dashboardLink && (
                   <Link

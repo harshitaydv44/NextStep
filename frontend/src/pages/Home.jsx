@@ -7,7 +7,7 @@ import CTASection from "../components/CTASection";
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-      <Icon className="w-6 h-6 text-blue-600" />
+      <Icon className="w-6 h-6 text-primary-600" />
     </div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-gray-600">{description}</p>
@@ -44,7 +44,7 @@ const Home = () => {
       <section className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r text-primary-900 to-secondary-700">
               Shape Your Tech Career Path
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -53,14 +53,14 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/roadmaps"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors duration-300"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg bg-primary-500 font-semibold text-whiterounded-xl rounded-xl hover:bg-primary-600 transition-colors duration-300"
               >
                 Explore Roadmaps
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
                 to="/mentors"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-colors duration-300"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-600 border-2 border-primary-600 rounded-xl hover:bg-blue-50 transition-colors duration-300"
               >
                 Find a Mentor
               </Link>

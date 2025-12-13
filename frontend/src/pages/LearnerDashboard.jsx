@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Tab } from "@headlessui/react";
 import { learnerDashboardAPI } from "../services/api";
+
 import {
   MessageSquare,
   Calendar,
@@ -19,6 +20,15 @@ const getLocalUser = () => {
   return userString ? JSON.parse(userString) : null;
 };
 
+const getBrownAvatar = (name, avatarUrl) => {
+  if (!avatarUrl || avatarUrl.includes("ui-avatars.com")) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      name || "Mentor"
+    )}&background=8B4513&color=fff`;
+  }
+  return avatarUrl;
+};
+
 // Main Dashboard Component
 const LearnerDashboard = () => {
   const [learner, setLearner] = useState(getLocalUser());
@@ -33,11 +43,10 @@ const LearnerDashboard = () => {
   const tabClass = ({ selected }) =>
     `flex items-center gap-2 w-full px-4 py-3 text-sm font-medium leading-5 rounded-lg
      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-     ${
-       selected
-         ? "bg-primary-600 text-white shadow"
-         : "text-gray-700 hover:bg-gray-100 hover:text-primary-700"
-     }`;
+     ${selected
+      ? "bg-primary-600 text-white shadow"
+      : "text-gray-700 hover:bg-gray-100 hover:text-primary-700"
+    }`;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -144,23 +153,21 @@ function MySessions() {
       {sessions.map((session) => (
         <div
           key={session._id}
-          className={`p-4 rounded-lg border ${
-            session.completed ? "bg-gray-50" : "bg-white"
-          }`}
+          className={`p-4 rounded-lg border ${session.completed ? "bg-gray-50" : "bg-white"
+            }`}
         >
           <div className="flex flex-col md:flex-row md:justify-between">
             {/* Mentor Info */}
             <div className="flex items-center gap-3">
               <img
-                src={session.mentorId?.avatar}
+                src={getBrownAvatar(
+                  session.mentorId?.name,
+                  session.mentorId?.avatar
+                )}
                 alt={session.mentorId?.name}
                 className="w-12 h-12 rounded-full"
-                onError={(e) => {
-                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    session.mentorId?.name
-                  )}&background=6366f1&color=fff`;
-                }}
               />
+
               <div>
                 <p className="font-semibold text-lg text-secondary-700">
                   {session.mentorId?.name || "Mentor"}
@@ -174,16 +181,14 @@ function MySessions() {
 
             {/* Status Badge */}
             <div
-              className={`mt-4 md:mt-0 p-2 rounded-lg h-fit ${
-                session.completed
-                  ? "border-green-200 bg-green-50"
-                  : "border-yellow-200 bg-yellow-50"
-              }`}
+              className={`mt-4 md:mt-0 p-2 rounded-lg h-fit ${session.completed
+                ? "border-green-200 bg-green-50"
+                : "border-yellow-200 bg-yellow-50"
+                }`}
             >
               <p
-                className={`text-sm font-medium ${
-                  session.completed ? "text-green-700" : "text-yellow-700"
-                }`}
+                className={`text-sm font-medium ${session.completed ? "text-green-700" : "text-yellow-700"
+                  }`}
               >
                 {session.completed ? (
                   <span className="flex items-center gap-1">
@@ -272,39 +277,38 @@ function MyMessages() {
         <div key={convo._id} className="p-4 rounded-lg border bg-gray-50">
           <div className="flex items-center gap-3 mb-2">
             <img
-              src={convo.mentorId?.avatar}
+              src={getBrownAvatar(
+                convo.mentorId?.name,
+                convo.mentorId?.avatar
+              )}
               alt={convo.mentorId?.name}
               className="w-10 h-10 rounded-full"
-              onError={(e) => {
-                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  convo.mentorId?.name
-                )}&background=6366f1&color=fff`;
-              }}
             />
+
             <p className="font-semibold text-secondary-700">
               {convo.mentorId?.name || "Mentor"}
             </p>
           </div>
-          
+
           <h3 className="font-medium text-gray-800">Subject: {convo.subject}</h3>
-          
+
           {/* This shows all messages, including replies! */}
           <div className="mt-4 space-y-2 border-t pt-4">
             {convo.messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${
-                  msg.from === "learner" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${msg.from === "learner" ? "justify-end" : "justify-start"
+                  }`}
               >
                 <div
-                  className={`px-4 py-2 rounded-lg max-w-xs ${
-                    msg.from === "learner"
-                      ? "bg-primary-600 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
+                  className={`px-4 py-2 rounded-lg max-w-xs ${msg.from === "learner"
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-200 text-gray-800"
+                    }`}
                 >
-                  <p className="text-sm">{msg.text}</p>
+                  <p className={`text-sm ${msg.from === 'learner' ? 'text-white' : 'text-black'}`}>
+                    {msg.text}
+                  </p>
                 </div>
               </div>
             ))}

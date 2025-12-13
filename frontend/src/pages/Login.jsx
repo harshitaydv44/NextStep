@@ -44,7 +44,7 @@ const Login = () => {
       if (user.role === "teacher") {
         navigate("/mentor-dashboard");
       } else {
-        navigate("/");
+        navigate("/my-dashboard");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");

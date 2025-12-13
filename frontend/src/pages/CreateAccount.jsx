@@ -83,18 +83,19 @@ const CreateAccount = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-light py-12 px-4">
+
             <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-center mb-8">Create Account</h2>
+                <h2 className="text-3xl font-bold text-center mb-8 text-primary-800">Create Account</h2>
                 <div className="flex justify-center mb-8">
                     <button
-                        className={`px-6 py-2 rounded-l-lg font-semibold border border-blue-600 focus:outline-none ${role === "mentor" ? "bg-blue-600 text-white" : "bg-white text-blue-600"}`}
+                        className={`px-6 py-2 rounded-l-lg font-semibold border border-primary-600 focus:outline-none ${role === "mentor" ? "bg-primary-600 text-white" : "bg-white text-primary-600"}`}
                         onClick={() => setRole("mentor")}
                     >
                         Mentor
                     </button>
                     <button
-                        className={`px-6 py-2 rounded-r-lg font-semibold border border-blue-600 focus:outline-none ${role === "learner" ? "bg-blue-600 text-white" : "bg-white text-blue-600"}`}
+                        className={`px-6 py-2 rounded-r-lg font-semibold border border-primary-600 focus:outline-none ${role === "learner" ? "bg-primary-600 text-white" : "bg-white text-primary-600"}`}
                         onClick={() => setRole("learner")}
                     >
                         Learner
@@ -139,11 +140,11 @@ const CreateAccount = () => {
                             <input name="password" type="password" required placeholder="Password" className="form-input w-full" value={learnerForm.password} onChange={handleLearnerChange} />
                         </>
                     )}
-                    <button type="submit" disabled={loading} className={`w-full py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors ${loading ? "opacity-75 cursor-not-allowed" : ""}`}>{loading ? "Creating account..." : "Create Account"}</button>
+                    <button type="submit" disabled={loading} className={`w-full py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors ${loading ? "opacity-75 cursor-not-allowed" : ""}`}>{loading ? "Creating account..." : "Create Account"}</button>
                 </form>
             </div>
         </div>
     );
 };
 
-export default CreateAccount; 
+export default CreateAccount;

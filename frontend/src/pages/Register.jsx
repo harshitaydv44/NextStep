@@ -78,7 +78,7 @@ const Register = () => {
                 name="fullName"
                 type="text"
                 required
-                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your full name"
                 value={formData.fullName}
                 onChange={handleChange}
@@ -94,7 +94,7 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
@@ -110,7 +110,7 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
@@ -122,7 +122,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loading ? "opacity-75 cursor-not-allowed" : ""
+            className={`w-full px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${loading ? "opacity-75 cursor-not-allowed" : ""
               }`}
           >
             {loading ? "Creating account..." : "Create account"}
