@@ -13,15 +13,24 @@ dotenv.config();
 const app = express();
 
 
-app.use(cors());
+app.use(
+    cors({
+        origin: [
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'https://nextstep-frontend-zspa.onrender.com'
+        ],
+        credentials: true
+    })
+);
 app.use(express.json());
 
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nextstep';
-const PORT = process.env.PORT || 5000;
-let currentPort = PORT;
-const MAX_PORT_RETRIES = 5;
-let portRetries = 0;
+// const PORT = process.env.PORT || 5000;
+// let currentPort = PORT;
+// const MAX_PORT_RETRIES = 5;
+// let portRetries = 0;
 
 
 const connectWithRetry = async () => {
@@ -82,18 +91,9 @@ const startServer = () => {
         console.log(`Server is running on port ${currentPort}`);
         portRetries = 0;
     });
+});
+    const PORT = process.env.PORT || 5000;
 
-    server.on('error', (error) => {
-        if (error.code === 'EADDRINUSE' && portRetries < MAX_PORT_RETRIES) {
-            console.log(`Port ${currentPort} is in use, trying port ${++currentPort}...`);
-            portRetries++;
-            server.close();
-            startServer();
-        } else {
-            console.error('Server error:', error);
-            process.exit(1);
-        }
-    });
-};
-
-startServer();
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
