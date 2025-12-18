@@ -12,7 +12,7 @@ const ResourceCard = ({ title, links }) => (
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-700 flex items-center"
+                        className="text-primary-600 hover:text-primary-700 flex items-center"
                     >
                         <Globe className="w-4 h-4 mr-2" />
                         {link.title}
@@ -29,7 +29,7 @@ const TechnologyCard = ({ title, technologies, resources }) => (
         <ul className="space-y-3 mb-6">
             {technologies.map((tech, index) => (
                 <li key={index} className="flex items-center text-gray-700">
-                    <Code className="w-5 h-5 mr-3 text-blue-600" />
+                    <Code className="w-5 h-5 mr-3 text-primary-600" />
                     {tech}
                 </li>
             ))}
@@ -46,7 +46,7 @@ const ProjectCard = ({ title, description, skills }) => (
             {skills.map((skill, index) => (
                 <span
                     key={index}
-                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-sm"
                 >
                     {skill}
                 </span>
@@ -60,75 +60,73 @@ const AdditionalResources = () => (
         <div className="container mx-auto max-w-6xl px-4 py-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-8">Additional Resources</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Online Classes */}
+
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
+                        <BookOpen className="w-5 h-5 mr-2 text-primary-600" />
                         Online Classes
                     </h3>
                     <ul className="space-y-3">
                         <li>
-                            <a href="https://www.udemy.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.udemy.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Udemy
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.coursera.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.coursera.org" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Coursera
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.pluralsight.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.pluralsight.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Pluralsight
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                {/* Practice Platforms */}
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <Laptop className="w-5 h-5 mr-2 text-blue-600" />
+                        <Laptop className="w-5 h-5 mr-2 text-primary-600" />
                         Practice Platforms
                     </h3>
                     <ul className="space-y-3">
                         <li>
-                            <a href="https://www.freecodecamp.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.freecodecamp.org" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 freeCodeCamp
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.codecademy.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.codecademy.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Codecademy
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.frontendmentor.io" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.frontendmentor.io" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Frontend Mentor
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                {/* Developer Tools */}
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <Terminal className="w-5 h-5 mr-2 text-blue-600" />
+                        <Terminal className="w-5 h-5 mr-2 text-primary-600" />
                         Developer Tools
                     </h3>
                     <ul className="space-y-3">
                         <li>
-                            <a href="https://code.visualstudio.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://code.visualstudio.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 VS Code
                             </a>
                         </li>
                         <li>
-                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 GitHub
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.postman.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                            <a href="https://www.postman.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
                                 Postman
                             </a>
                         </li>
@@ -197,41 +195,38 @@ const RoadmapDetail = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navigation */}
+        <div className="min-h-screen bg-white">
+
             <nav className="bg-white shadow-sm">
                 <div className="container mx-auto max-w-6xl px-4 py-4">
-                    <Link to="/roadmaps" className="inline-flex items-center text-gray-600 hover:text-blue-600">
+                    <Link to="/roadmaps" className="inline-flex items-center text-gray-600 hover:text-primary-600">
                         <ArrowLeft className="w-5 h-5 mr-2" />
                         Back to Roadmaps
                     </Link>
                 </div>
             </nav>
 
-            {/* Hero Section */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16 px-4">
+            <div className="bg-gradient-to-r from-primary-600 to-secondary-500 text-white py-20">
                 <div className="container mx-auto max-w-6xl">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Web Development Career Path
                     </h1>
-                    <p className="text-xl text-blue-100">
+                    <p className="text-xl text-white text-opacity-90">
                         Master the art of building modern web applications
                     </p>
                 </div>
             </div>
 
-            {/* Learning Path Section */}
             <div className="container mx-auto max-w-6xl px-4 py-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-8">Learning Path</h2>
 
-                {/* Technology Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                     {Object.values(technologies).map((tech, index) => (
                         <TechnologyCard key={index} {...tech} />
                     ))}
                 </div>
 
-                {/* Projects Section */}
+
                 <h2 className="text-2xl font-bold text-gray-800 mb-8">Project Ideas</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                     {projects.map((project, index) => (
@@ -240,7 +235,7 @@ const RoadmapDetail = () => {
                 </div>
             </div>
 
-            {/* Additional Resources Section */}
+
             <AdditionalResources />
         </div>
     );

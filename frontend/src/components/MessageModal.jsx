@@ -118,7 +118,7 @@ const MessageModal = ({ isOpen, onClose, mentor }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                         >
                             Cancel
                         </button>

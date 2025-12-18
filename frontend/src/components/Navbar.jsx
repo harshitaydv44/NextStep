@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu as MenuIcon, X, LayoutDashboard, LogOut } from 'lucide-react';
 import { Menu as HeadlessMenu, Transition } from '@headlessui/react';
 
-// Navigation links
+
 const publicNavLinks = [
   { path: '/', text: 'Home' },
   { path: '/about', text: 'About' },
@@ -11,7 +11,7 @@ const publicNavLinks = [
   { path: '/contact', text: 'Contact' },
 ];
 
-// Helper function to safely get user from localStorage
+
 const getStoredUser = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -34,15 +34,15 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Memoize the stored user to prevent unnecessary re-renders
+ 
   const storedUser = useCallback(getStoredUser, []);
 
-  // Initialize user state and set up event listeners
+
   useEffect(() => {
-    // Initial load
+  
     setUser(storedUser());
 
-    // Handle storage changes
+    
     const handleStorageChange = (e) => {
       if (e.key === 'user' || e.key === 'token' || e.key === null) {
         setUser(storedUser());
@@ -58,13 +58,13 @@ const Navbar = () => {
     };
   }, [storedUser]);
 
-  // Helper function to get user initial
+  
   const getInitial = useCallback((name) => {
     if (!name) return 'U';
     return name.charAt(0).toUpperCase();
   }, []);
 
-  // Get appropriate dashboard link based on user role
+  
   const getDashboardLink = useCallback(() => {
     if (!user) return null;
 
@@ -76,7 +76,7 @@ const Navbar = () => {
       };
     }
 
-    // For students, always return the learner dashboard
+   
     return {
       path: '/my-dashboard',
       text: 'My Dashboard',
@@ -86,25 +86,23 @@ const Navbar = () => {
 
   const dashboardLink = getDashboardLink();
 
-  // Get display name with fallbacks
+
   const displayName = user?.fullName || user?.username || user?.email?.split('@')[0] || 'User';
 
-  // Handle user logout
+
   const handleLogout = useCallback(() => {
-    // Clear all auth data
+
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    // Dispatch custom event to notify other components
+    
     window.dispatchEvent(new Event('authChange'));
 
-    // Close mobile menu if open
+
     setIsOpen(false);
 
-    // Navigate to home page
     navigate('/', { replace: true });
 
-    // Force a full page reload to reset all states
     window.location.reload();
   }, [navigate]);
 
@@ -126,7 +124,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+       
           {(!user || user.role !== 'teacher') && (
             <div className="hidden md:flex items-center space-x-6">
               {publicNavLinks.map((link) => (
@@ -141,12 +139,12 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Desktop Auth Buttons & Mobile Menu Toggle */}
+        
           <div className="flex items-center">
-            {/* Desktop Auth Buttons */}
+          
             <div className="hidden md:flex items-center space-x-4">
               {user ? (
-                // --- USER IS LOGGED IN (DESKTOP) ---
+      
                 <HeadlessMenu as="div" className="relative">
                   <div>
                     <HeadlessMenu.Button
@@ -209,7 +207,7 @@ const Navbar = () => {
                   </Transition>
                 </HeadlessMenu>
               ) : (
-                // --- USER NOT LOGGED IN (DESKTOP) ---
+               
                 <div className="flex items-center space-x-4">
                   <Link
                     to="/login"
@@ -227,7 +225,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile menu button */}
+          
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -246,11 +244,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
+ 
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
           <div className="px-2 pt-2 pb-4 space-y-1">
-            {/* Public Navigation Links */}
+           
             {(!user || user.role !== 'teacher') && publicNavLinks.map((link) => (
               <Link
                 key={link.path}
@@ -263,13 +261,13 @@ const Navbar = () => {
             ))}
 
             {user ? (
-              // --- USER LOGGED IN (MOBILE) ---
+            
               <div className="border-t border-gray-100 mt-2 pt-2">
                 <div className="px-4 py-2 text-sm text-gray-500">
                   Signed in as <span className="font-bold">{displayName}</span>
                 </div>
 
-                {/* Dashboard Link */}
+              
                 {dashboardLink && (
                   <Link
                     to={dashboardLink.path}
@@ -281,7 +279,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {/* Logout Button */}
+              
                 <button
                   onClick={handleLogout}
                   className="w-full text-left flex items-center px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg transition-colors duration-200"
@@ -291,7 +289,7 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              // --- USER NOT LOGGED IN (MOBILE) ---
+           
               <div className="pt-2 space-y-2 border-t border-gray-100 mt-2">
                 <Link
                   to="/login"

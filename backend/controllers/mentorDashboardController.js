@@ -1,29 +1,56 @@
-// controllers/mentorDashboardController.js
+
 import Message from '../models/Message.js';
 import SessionBooking from '../models/SessionBooking.js';
-import Mentor from '../models/mentor.js'; // <-- IMPORT MENTOR MODEL
-import User from '../models/user.js'; 
+import Mentor from '../models/mentor.js'; 
+import User from '../models/user.js';
 
-/**
- * Helper function to get Mentor ID from User ID
- * The auth middleware gives us req.user._id (User ID), but our
- * sessions and messages are linked to the Mentor ID.
- */
+
 const getMentorIdFromUserId = async (userId) => {
-  const mentor = await Mentor.findOne({ userId: userId });
-  if (!mentor) throw new Error('Mentor profile not found for this user.');
+ 
+  let mentor = await Mentor.findOne({ userId });
+
+ 
+  if (!mentor) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+   
+    if (user.role === 'teacher') {
+      mentor = await Mentor.create({
+        userId: user._id,
+        name: user.fullName,
+        role: user.expertise || 'Mentor',
+        company: user.company || 'Freelance',
+        avatar: user.avatar || '/images/mentors/default.jpg',
+        bio: user.whyMentor || 'Experienced mentor ready to help students grow.',
+        skills: user.expertise ? [user.expertise] : [],
+        linkedin: user.linkedin || '',
+        github: user.github || '',
+        hourlyRate: 30, 
+        domain: user.domain || 'Other', 
+        experience: user.experience || 2, 
+        rating: 0, 
+        availability: 'Available', 
+        education: [], 
+        languages: ['English'] 
+      });
+    } else {
+      throw new Error('User is not registered as a mentor');
+    }
+  }
+
   return mentor._id;
 };
 
-// @desc    Get messages for a mentor
-// @route   GET /api/mentor/messages
-// @access  Private (Mentor)
+
 export const getMentorMessages = async (req, res) => {
   try {
-    // 1. Get the Mentor ID from the logged-in User ID
+    
     const mentorId = await getMentorIdFromUserId(req.user._id);
 
-    // 2. Find messages using the correct Mentor ID
+   
     const messages = await Message.find({ mentorId }).populate(
       'learnerId',
       'fullName'
@@ -36,49 +63,47 @@ export const getMentorMessages = async (req, res) => {
   }
 };
 
-// @desc    Send a reply to a message conversation
-// @route   POST /api/mentor/messages/:conversationId/reply
-// @access  Private (Mentor)
+
 export const replyToMessage = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { text } = req.body;
 
-    // Input validation
+   
     if (!text || typeof text !== 'string' || text.trim() === '') {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Message text is required and cannot be empty' 
+        message: 'Message text is required and cannot be empty'
       });
     }
 
-    // 1. Get the Mentor ID from the logged-in User ID
+   
     const mentorId = await getMentorIdFromUserId(req.user._id);
 
-    // 2. Find the message by its ID and verify the mentor owns it
+   
     const message = await Message.findOne({
       _id: conversationId,
       mentorId: mentorId,
     });
 
     if (!message) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Conversation not found or you do not have permission to reply to this conversation' 
+        message: 'Conversation not found or you do not have permission to reply to this conversation'
       });
     }
 
-    // Add the new message to the conversation
+   
     const newMessage = {
       from: 'mentor',
       text: text.trim(),
       timestamp: new Date()
     };
-    
+
     message.messages.push(newMessage);
     await message.save();
 
-    // Populate the response with user details
+  
     const populatedMessage = await Message.findById(message._id)
       .populate('learnerId', 'fullName email')
       .populate('mentorId', 'name');
@@ -88,12 +113,12 @@ export const replyToMessage = async (req, res) => {
       message: 'Reply sent successfully',
       data: {
         ...populatedMessage.toObject(),
-        newMessage // Include the newly added message in the response
+        newMessage 
       }
     });
   } catch (error) {
     console.error('Error sending message reply:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Failed to send reply',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
@@ -101,15 +126,13 @@ export const replyToMessage = async (req, res) => {
   }
 };
 
-// @desc    Get session bookings for a mentor
-// @route   GET /api/mentor/sessions
-// @access  Private (Mentor)
+
 export const getMentorSessions = async (req, res) => {
   try {
-    // 1. Get the Mentor ID from the logged-in User ID
+  
     const mentorId = await getMentorIdFromUserId(req.user._id);
 
-    // 2. Find sessions using the correct Mentor ID
+   
     const sessions = await SessionBooking.find({ mentorId }).populate(
       'learnerId',
       'fullName'
@@ -122,18 +145,16 @@ export const getMentorSessions = async (req, res) => {
   }
 };
 
-// @desc    Add meeting link to a session booking
-// @route   PUT /api/mentor/sessions/:sessionId/link
-// @access  Private (Mentor)
+
 export const addSessionLink = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { link } = req.body;
 
-    // 1. Get the Mentor ID from the logged-in User ID
+   
     const mentorId = await getMentorIdFromUserId(req.user._id);
 
-    // 2. Find the session by its ID *and* verify the mentor owns it
+   
     const session = await SessionBooking.findOne({
       _id: sessionId,
       mentorId: mentorId,
@@ -153,17 +174,15 @@ export const addSessionLink = async (req, res) => {
   }
 };
 
-// @desc    Mark a session booking as completed
-// @route   PUT /api/mentor/sessions/:sessionId/complete
-// @access  Private (Mentor)
+
 export const markSessionCompleted = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    
-    // 1. Get the Mentor ID from the logged-in User ID
+
+   
     const mentorId = await getMentorIdFromUserId(req.user._id);
 
-    // 2. Find the session by its ID *and* verify the mentor owns it
+   
     const session = await SessionBooking.findOne({
       _id: sessionId,
       mentorId: mentorId,

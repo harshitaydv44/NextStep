@@ -12,11 +12,7 @@ export default function MyMessages() {
         // Simulate API call
         const fetchMessages = async () => {
             try {
-                // Replace with actual API call
-                // const response = await api.get('/api/messages');
-                // setMessages(response.data);
-
-                // Sample data
+               
                 const sampleMessages = [
                     {
                         id: 1,
@@ -26,7 +22,7 @@ export default function MyMessages() {
                         date: '2023-06-10T10:30:00',
                         read: true
                     },
-                    // Add more sample messages as needed
+                    
                 ];
 
                 setMessages(sampleMessages);
@@ -44,10 +40,10 @@ export default function MyMessages() {
         e.preventDefault();
         if (!newMessage.trim()) return;
 
-        // Here you would typically send the message to your API
+    
         console.log('Sending message:', newMessage);
 
-        // For demo purposes, we'll just clear the input
+       
         setNewMessage('');
     };
 

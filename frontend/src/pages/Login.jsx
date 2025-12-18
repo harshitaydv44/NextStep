@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       const response = await authAPI.login(formData);
-      // Support both possible response shapes
+     
       const data = response.data;
       let user, token;
       if (data.user) {
@@ -36,11 +36,11 @@ const Login = () => {
         token = data.token;
       }
 
-      // Store token and user data
+     
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect based on role
+      
       if (user.role === "teacher") {
         navigate("/mentor-dashboard");
       } else {

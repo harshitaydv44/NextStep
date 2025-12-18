@@ -7,47 +7,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary (Russet) - Main brand color
+       
         primary: {
           50: '#FDF8F3',
           100: '#FBEFE6',
           200: '#F6DEC9',
           300: '#E8C19F',
           400: '#D9A375',
-          500: '#80461B', // Main primary color
+          500: '#80461B', 
           600: '#6B3B16',
           700: '#552F11',
           800: '#40230D',
           900: '#2B1708',
           DEFAULT: '#80461B',
         },
-        // Secondary (Tan) - Accent color
+      
         secondary: {
           50: '#FCFBF5',
           100: '#F9F7EB',
           200: '#F2EDD4',
           300: '#EBE3BD',
           400: '#DDCF90',
-          500: '#D2B84C', // Main secondary color
+          500: '#D2B84C', 
           600: '#C1A740',
           700: '#9A8533',
           800: '#736326',
           900: '#4D4219',
           DEFAULT: '#D2B84C',
         },
-        // Background colors
-        background: '#F5F1E8', // Direct background color
-        // Additional background variants
+     
+        background: '#F5F1E8', 
         'background-light': '#F9F7F2',
         'background-dark': '#E8E2D5',
-        // Text colors
+     
         text: {
-          primary: '#3E2723', // Dark brown for main text
-          secondary: '#5D4037', // Lighter brown for secondary text
-          muted: '#8D6E63', // Muted brown for less important text
-          inverted: '#FFFFFF', // White text for dark backgrounds
+          primary: '#3E2723', 
+          secondary: '#5D4037',
+          muted: '#8D6E63', 
+          inverted: '#FFFFFF', 
         },
-        // Success, warning, error, and info colors
+      
         success: {
           light: '#E8F5E9',
           DEFAULT: '#4CAF50',
@@ -78,7 +77,7 @@ export default {
           DEFAULT: '#2196F3',
           dark: '#1565C0',
         },
-        // Keep existing colors for backward compatibility
+     
         beige: '#F9F7F2',
         'brand-text': {
           DEFAULT: '#3E2723',

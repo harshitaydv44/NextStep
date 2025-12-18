@@ -34,11 +34,10 @@ const MentorDashboard = () => {
   const tabClass = ({ selected }) =>
     `flex items-center gap-2 w-full px-4 py-3 text-sm font-medium leading-5 rounded-lg
      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-     ${
-       selected
-         ? "bg-primary-600 text-white shadow"
-         : "text-gray-700 hover:bg-gray-100 hover:text-primary-700"
-     }`;
+     ${selected
+      ? "bg-primary-600 text-white shadow"
+      : "text-gray-700 hover:bg-gray-100 hover:text-primary-700"
+    }`;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -184,9 +183,8 @@ function MySessions() {
       {sessions.map((session) => (
         <div
           key={session._id}
-          className={`p-4 rounded-lg border ${
-            session.completed ? "bg-gray-50" : "bg-white"
-          }`}
+          className={`p-4 rounded-lg border ${session.completed ? "bg-gray-50" : "bg-white"
+            }`}
         >
           <div className="flex flex-col md:flex-row md:justify-between">
             <div>
@@ -202,16 +200,14 @@ function MySessions() {
               </p>
             </div>
             <div
-              className={`mt-4 md:mt-0 p-2 rounded-lg ${
-                session.completed
-                  ? "border-green-200 bg-green-50"
-                  : "border-yellow-200 bg-yellow-50"
-              }`}
+              className={`mt-4 md:mt-0 p-2 rounded-lg ${session.completed
+                ? "border-green-200 bg-green-50"
+                : "border-yellow-200 bg-yellow-50"
+                }`}
             >
               <p
-                className={`text-sm font-medium ${
-                  session.completed ? "text-green-700" : "text-yellow-700"
-                }`}
+                className={`text-sm font-medium ${session.completed ? "text-green-700" : "text-yellow-700"
+                  }`}
               >
                 Status: {session.completed ? "Completed" : "Pending"}
               </p>
@@ -272,7 +268,7 @@ function MyMessages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // State for the reply modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedConvo, setSelectedConvo] = useState(null);
@@ -297,7 +293,7 @@ function MyMessages() {
       setLoading(false);
     }
   };
-  
+
   const openReplyModal = (convo) => {
     setSelectedConvo(convo);
     setIsModalOpen(true);
@@ -313,15 +309,15 @@ function MyMessages() {
   const handleReplySubmit = async (e) => {
     e.preventDefault();
     if (!replyText.trim() || !selectedConvo) return;
-    
+
     setReplyLoading(true);
     setReplyError(null);
-    
+
     try {
       await mentorDashboardAPI.replyToMessage(selectedConvo._id, replyText);
       setReplyLoading(false);
       closeReplyModal();
-      fetchMessages(); // Refresh the message list
+      fetchMessages(); 
     } catch (err) {
       setReplyLoading(false);
       setReplyError("Failed to send reply. Please try again.");
@@ -364,32 +360,37 @@ function MyMessages() {
                 Reply
               </button>
             </div>
-            
+
             <div className="mt-4 space-y-2 border-t pt-4">
-              {convo.messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${
-                    msg.from === "mentor" ? "justify-end" : "justify-start"
-                  }`}
-                >
+              {convo.messages.map((msg, idx) => {
+                const isMentor = String(msg.from || "")
+                  .trim()
+                  .toLowerCase() === "mentor";
+
+                return (
                   <div
-                    className={`px-4 py-2 rounded-lg max-w-xs ${
-                      msg.from === "mentor"
+                    key={idx}
+                    className={`flex ${isMentor ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`px-4 py-2 rounded-lg max-w-xs ${isMentor
                         ? "bg-primary-600 text-white"
                         : "bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    <p className="text-sm">{msg.text}</p>
+                        }`}
+                    >
+                      <p className={`text-sm ${isMentor ? "text-white" : ""}`}>
+                        {msg.text}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}
       </div>
-      
-      {/* Reply Modal */}
+
+     
       <Transition appear show={isModalOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeReplyModal}>
           <Transition.Child
@@ -403,7 +404,6 @@ function MyMessages() {
           >
             <div className="fixed inset-0 bg-black bg-opacity-50" />
           </Transition.Child>
-
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
@@ -464,7 +464,8 @@ function MyMessages() {
     </>
   );
 }
-// --- Child Component: Edit Profile (FIXED) ---
+
+
 function EditProfile({ mentorData }) {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -492,14 +493,14 @@ function EditProfile({ mentorData }) {
   ];
 
   useEffect(() => {
-    // Fetch the LATEST profile data from the server
+   
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        // This is the correct, working API call
+       
         const response = await authAPI.getCurrentUser();
         const user = response.data.user || response.data;
-        // Pre-fill form with server data
+       
         setFormData({
           fullName: user.fullName || "",
           email: user.email || "",
@@ -534,15 +535,15 @@ function EditProfile({ mentorData }) {
     setSuccess(null);
 
     try {
-      // This is the correct, working API call
+    
       const response = await authAPI.updateUserProfile(formData);
-      
-      // CRITICAL: Update localStorage
+
+   
       const updatedUser = response.data.user || response.data;
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      
+
       setSuccess("Profile updated successfully!");
-    } catch (err){
+    } catch (err) {
       console.error("Failed to update profile:", err);
       setError(err.response?.data?.message || "Failed to save profile.");
     } finally {
@@ -566,16 +567,9 @@ function EditProfile({ mentorData }) {
           <span>{error}</span>
         </div>
       )}
-      {success && (
-        <div className="p-4 bg-green-50 text-green-700 border border-green-200 rounded-lg flex items-center gap-2">
-          <CheckCircle className="w-5 h-5" />
-          <span>{success}</span>
-        </div>
-      )}
 
-      {/* Form Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Full Name */}
+     
         <div>
           <label htmlFor="fullName" className="form-label">
             Full Name
@@ -591,7 +585,7 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* Email */}
+        
         <div>
           <label htmlFor="email" className="form-label">
             Email
@@ -607,7 +601,7 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* Expertise */}
+       
         <div>
           <label htmlFor="expertise" className="form-label">
             Area of Expertise
@@ -624,7 +618,7 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* Experience */}
+     
         <div>
           <label htmlFor="experience" className="form-label">
             Experience (in years)
@@ -641,7 +635,6 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* Domain */}
         <div className="md:col-span-2">
           <label htmlFor="domain" className="form-label">
             Primary Domain
@@ -663,7 +656,7 @@ function EditProfile({ mentorData }) {
           </select>
         </div>
 
-        {/* LinkedIn */}
+      
         <div>
           <label htmlFor="linkedin" className="form-label inline-flex items-center gap-1">
             <Linkedin className="w-4 h-4" /> LinkedIn Profile
@@ -679,7 +672,7 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* GitHub */}
+      
         <div>
           <label htmlFor="github" className="form-label inline-flex items-center gap-1">
             <Github className="w-4 h-4" /> GitHub Profile
@@ -695,7 +688,7 @@ function EditProfile({ mentorData }) {
           />
         </div>
 
-        {/* Why Mentor */}
+    
         <div className="md:col-span-2">
           <label htmlFor="whyMentor" className="form-label">
             Why do you want to mentor?
@@ -712,7 +705,7 @@ function EditProfile({ mentorData }) {
         </div>
       </div>
 
-      {/* Save Button */}
+     
       <div className="pt-4 border-t text-right">
         <button
           type="submit"

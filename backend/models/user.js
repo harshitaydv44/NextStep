@@ -22,23 +22,33 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'teacher', 'admin'],
         default: 'student',
     },
-    // Mentor-specific fields
+    // OTP & Verification Fields (NEW)
+    otp: { 
+        type: String 
+    },
+    otpExpires: { 
+        type: Date 
+    },
+    isVerified: { 
+        type: Boolean, 
+        default: false 
+    },
+   
     expertise: { type: String },
     experience: { type: Number },
     domain: { type: String },
     linkedin: { type: String },
     github: { type: String },
     whyMentor: { type: String },
-    // Learner-specific fields
+    
     college: { type: String },
     gradYear: { type: Number },
-    // Shared (for dropdown)
+    
     domainInterest: { type: [String], default: [] },
 }, {
     timestamps: true,
 });
 
-// Check if the model exists before compiling it
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User;

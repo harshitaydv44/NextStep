@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Clock, Video, Loader2 } from 'lucide-react';
 
 export default function MySessions() {
-    // This would normally come from an API
+    
     const upcomingSessions = [
         {
             id: 1,
@@ -12,11 +12,11 @@ export default function MySessions() {
             mentor: 'John Doe',
             meetingLink: 'https://meet.example.com/abc123'
         },
-        // Add more sample sessions as needed
+       
     ];
 
     const pastSessions = [
-        // Sample past sessions
+        
     ];
 
     return (
@@ -85,7 +85,7 @@ export default function MySessions() {
             {pastSessions.length > 0 && (
                 <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Past Sessions</h3>
-                    {/* Similar structure to upcoming sessions but for past sessions */}
+                    
                 </div>
             )}
         </div>

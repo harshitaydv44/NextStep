@@ -121,9 +121,9 @@ const Mentors = () => {
         </div>
       </div>
 
-      {/* Search and Filters */}
+   
       <div className="container mx-auto max-w-6xl px-4 py-8">
-        {/* Search Bar */}
+        
         <div className="relative max-w-2xl mx-auto mb-8">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
@@ -135,7 +135,7 @@ const Mentors = () => {
           />
         </div>
 
-        {/* Domain Filters */}
+     
         <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar mb-8">
           {DOMAIN_OPTIONS.map((domain) => (
             <button
@@ -152,7 +152,7 @@ const Mentors = () => {
           ))}
         </div>
 
-        {/* Sort Options */}
+     
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800">
             Available Mentors ({filteredMentors.length})
@@ -167,7 +167,7 @@ const Mentors = () => {
           </select>
         </div>
 
-        {/* Mentor Cards Grid */}
+      
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMentors.map((mentor) => (
             <MentorCard key={mentor._id} mentor={mentor} />
@@ -181,7 +181,7 @@ const Mentors = () => {
         )}
       </div>
 
-      {/* Booking Modal */}
+  
       {selectedMentor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-6 max-w-md w-full">

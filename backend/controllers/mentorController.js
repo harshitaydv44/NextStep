@@ -15,14 +15,14 @@ export const addMentor = async (req, res) => {
 
 export const getMentors = async (req, res) => {
     try {
-        // Get all mentors and populate user data
+       
         const mentors = await Mentor.find()
             .populate('userId', 'fullName email expertise experience domain linkedin github whyMentor')
             .select('-password');
 
-        console.log('Found mentors:', mentors); // Debug log
+        console.log('Found mentors:', mentors); 
 
-        // Transform the data to include both mentor and user information
+       
         const transformedMentors = mentors.map(mentor => ({
             ...mentor.toObject(),
             fullName: mentor.userId?.fullName || mentor.name,
@@ -47,32 +47,32 @@ export const bookMentorshipSession = async (req, res) => {
     try {
         const { mentorId } = req.params;
         const { date, time, topic } = req.body;
-        const learnerId = req.user._id; // From auth middleware
+        const learnerId = req.user._id; 
 
         console.log('Booking request:', { mentorId, date, time, topic, learnerId }); // Debug log
 
-        // Find the mentor by _id
+       
         const mentor = await Mentor.findById(mentorId);
         if (!mentor) {
-            console.log('Mentor not found for ID:', mentorId); // Debug log
+            console.log('Mentor not found for ID:', mentorId); 
             return res.status(404).json({ message: 'Mentor not found' });
         }
 
-        console.log('Found mentor:', mentor); // Debug log
+        console.log('Found mentor:', mentor); 
 
-        // Create the session booking
+       
         const sessionBooking = new SessionBooking({
             mentorId: mentor._id,
             learnerId,
             domain: mentor.domain,
-            date: `${date} ${time}`, // Combine date and time
+            date: `${date} ${time}`, 
             topic
         });
 
         await sessionBooking.save();
-        console.log('Created session booking:', sessionBooking); // Debug log
+        console.log('Created session booking:', sessionBooking); 
 
-        // Increment the mentor's session count
+      
         mentor.sessions += 1;
         await mentor.save();
 
@@ -86,14 +86,14 @@ export const bookMentorshipSession = async (req, res) => {
     }
 };
 
-// ✅ New function to send a message to mentor
+
 export const sendMessageToMentor = async (req, res) => {
     try {
         const { mentorId } = req.params;
         const { subject, message } = req.body;
-        const learnerId = req.user._id; // From auth middleware
+        const learnerId = req.user._id; 
 
-        // Input validation
+     
         if (!subject || !message) {
             return res.status(400).json({ 
                 message: 'Subject and message are required' 
@@ -102,13 +102,13 @@ export const sendMessageToMentor = async (req, res) => {
 
         console.log('Sending message to mentor:', { mentorId, subject, message, learnerId });
 
-        // Verify mentor exists
+      
         const mentor = await Mentor.findById(mentorId);
         if (!mentor) {
             return res.status(404).json({ message: 'Mentor not found' });
         }
 
-        // Create the message with proper structure
+      
         const newMessage = new Message({
             mentorId,
             learnerId,
@@ -122,7 +122,7 @@ export const sendMessageToMentor = async (req, res) => {
 
         await newMessage.save();
 
-        // Populate the response with user details
+      
         const populatedMessage = await Message.findById(newMessage._id)
             .populate('learnerId', 'fullName email')
             .populate('mentorId', 'name');

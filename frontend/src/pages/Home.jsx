@@ -69,7 +69,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+     
       <section className="py-20 px-6 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why Choose Next Step?</h2>
@@ -84,10 +84,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+     
       <TestimonialsSection />
 
-      {/* CTA Section */}
+   
       <CTASection />
     </div>
   );

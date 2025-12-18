@@ -1,6 +1,6 @@
 // src/pages/LearnerDashboard.jsx
 import React, { useState, useEffect, Fragment } from "react";
-import { Tab } from "@headlessui/react";
+import { Tab, Dialog, Transition } from "@headlessui/react";
 import { learnerDashboardAPI } from "../services/api";
 
 import {
@@ -236,22 +236,60 @@ function MyMessages() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedConvo, setSelectedConvo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [replyLoading, setReplyLoading] = useState(false);
+  const [replyError, setReplyError] = useState(null);
+
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const response = await learnerDashboardAPI.getMessages();
+      setMessages(response.data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to fetch messages.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        setLoading(true);
-        const response = await learnerDashboardAPI.getMessages();
-        setMessages(response.data);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch messages.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMessages();
   }, []);
+
+  const openReplyModal = (convo) => {
+    setSelectedConvo(convo);
+    setIsModalOpen(true);
+    setReplyText("");
+    setReplyError(null);
+  };
+
+  const closeReplyModal = () => {
+    setIsModalOpen(false);
+    setSelectedConvo(null);
+  };
+
+  const handleReplySubmit = async (e) => {
+    e.preventDefault();
+    if (!replyText.trim() || !selectedConvo) return;
+
+    setReplyLoading(true);
+    setReplyError(null);
+
+    try {
+      await learnerDashboardAPI.replyToMessage(selectedConvo._id, replyText);
+      setReplyLoading(false);
+      closeReplyModal();
+      fetchMessages();
+    } catch (err) {
+      setReplyLoading(false);
+      setReplyError("Failed to send reply. Please try again.");
+      console.error("Reply error:", err);
+    }
+  };
 
   if (loading)
     return (
@@ -271,52 +309,136 @@ function MyMessages() {
     );
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-900">My Conversations</h2>
-      {messages.map((convo) => (
-        <div key={convo._id} className="p-4 rounded-lg border bg-gray-50">
-          <div className="flex items-center gap-3 mb-2">
-            <img
-              src={getBrownAvatar(
-                convo.mentorId?.name,
-                convo.mentorId?.avatar
-              )}
-              alt={convo.mentorId?.name}
-              className="w-10 h-10 rounded-full"
-            />
+    <>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900">My Conversations</h2>
+        {messages.map((convo) => (
+          <div key={convo._id} className="p-4 rounded-lg border bg-gray-50">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src={getBrownAvatar(convo.mentorId?.name, convo.mentorId?.avatar)}
+                  alt={convo.mentorId?.name}
+                  className="w-10 h-10 rounded-full"
+                />
 
-            <p className="font-semibold text-secondary-700">
-              {convo.mentorId?.name || "Mentor"}
-            </p>
-          </div>
+                <p className="font-semibold text-secondary-700">
+                  {convo.mentorId?.name || "Mentor"}
+                </p>
+              </div>
 
-          <h3 className="font-medium text-gray-800">Subject: {convo.subject}</h3>
-
-          {/* This shows all messages, including replies! */}
-          <div className="mt-4 space-y-2 border-t pt-4">
-            {convo.messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.from === "learner" ? "justify-end" : "justify-start"
-                  }`}
+              <button
+                onClick={() => openReplyModal(convo)}
+                className="btn btn-secondary py-2 px-3 text-sm bg-secondary-600 hover:bg-secondary-700"
               >
+                Reply
+              </button>
+            </div>
+
+            <h3 className="font-medium text-gray-800">Subject: {convo.subject}</h3>
+
+            {/* This shows all messages, including replies! */}
+            <div className="mt-4 space-y-2 border-t pt-4">
+              {convo.messages.map((msg, idx) => (
                 <div
-                  className={`px-4 py-2 rounded-lg max-w-xs ${msg.from === "learner"
-                    ? "bg-primary-600 text-white"
-                    : "bg-gray-200 text-gray-800"
+                  key={idx}
+                  className={`flex ${msg.from === "learner" ? "justify-end" : "justify-start"
                     }`}
                 >
-                  <p className={`text-sm ${msg.from === 'learner' ? 'text-white' : 'text-black'}`}>
-                    {msg.text}
-                  </p>
+                  <div
+                    className={`px-4 py-2 rounded-lg max-w-xs ${msg.from === "learner"
+                        ? "bg-primary-600 text-white"
+                        : "bg-gray-200 text-gray-800"
+                      }`}
+                  >
+                    <p
+                      className={`text-sm ${msg.from === "learner" ? "text-white" : "text-black"
+                        }`}
+                    >
+                      {msg.text}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            {/* We can add a reply box here later */}
           </div>
-          {/* We can add a reply box here later */}
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+
+      <Transition appear show={isModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={closeReplyModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Reply to {selectedConvo?.mentorId?.name}
+                  </Dialog.Title>
+
+                  <form onSubmit={handleReplySubmit} className="mt-4 space-y-4">
+                    <textarea
+                      rows="4"
+                      className="form-input w-full"
+                      placeholder="Type your reply..."
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      required
+                    />
+
+                    {replyError && <p className="text-sm text-red-600">{replyError}</p>}
+
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        className="btn border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex-1"
+                        onClick={closeReplyModal}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-primary flex-1"
+                        disabled={replyLoading}
+                      >
+                        {replyLoading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          "Send Reply"
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
   );
 }
 

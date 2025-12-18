@@ -16,12 +16,12 @@ const seedData = async () => {
         });
         console.log('Connected to MongoDB Atlas');
 
-        // Clear existing data
+       
         console.log('Clearing existing data...');
         await Mentor.deleteMany({});
         await Roadmap.deleteMany({});
 
-        // Seed Mentors
+     
         console.log('Seeding mentors...');
         const mentors = [
             {
@@ -53,7 +53,7 @@ const seedData = async () => {
         await Mentor.insertMany(mentors);
         console.log('Mentors seeded successfully');
 
-        // Seed Roadmaps
+       
         console.log('Seeding roadmaps...');
         const roadmaps = [
             {

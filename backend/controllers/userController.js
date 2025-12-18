@@ -1,307 +1,403 @@
 import User from '../models/user.js';
-import Mentor from '../models/mentor.js';
 import SessionBooking from '../models/SessionBooking.js';
 import Message from '../models/Message.js';
-import bcrypt from 'bcryptjs';
+import Mentor from '../models/mentor.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs'; 
+import sendEmail from '../utils/sendEmail.js';
 
-// Register user
+
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '30d',
+    });
+};
+
+
 export const registerUser = async (req, res) => {
+    const { fullName, email, password, role, ...otherData } = req.body;
+
     try {
-        console.log('Registration request body:', req.body); // Debug log
-        const {
-            fullName,
-            email,
-            password,
-            role, // 'teacher' for mentor, 'student' for learner
-            expertise,
-            experience,
-            domain,
-            linkedin,
-            github,
-            whyMentor,
-            college,
-            gradYear,
-            domainInterest
-        } = req.body;
-
-        // Validation
-        if (!fullName || !email || !password || !role) {
-            return res.status(400).json({
-                message: 'Please provide all required fields',
-                received: { fullName, email, password: password ? 'provided' : 'missing', role }
-            });
-        }
-
-        // Check if user exists
+       
         const userExists = await User.findOne({ email });
+
         if (userExists) {
+         
+            if (!userExists.isVerified) {
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                const otpExpires = Date.now() + 10 * 60 * 1000; // Expires in 10 minutes
+
+                userExists.otp = otp;
+                userExists.otpExpires = otpExpires;
+                await userExists.save();
+
+                const message = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px;">
+            <h2 style="color: #8B4513;">NextStep - Verify your email</h2>
+            <p>Hi ${userExists.fullName},</p>
+            <p>Please use the OTP below to verify your email address:</p>
+            <h1 style="color: #333; letter-spacing: 5px;">${otp}</h1>
+            <p>This code expires in 10 minutes.</p>
+          </div>
+        </div>
+      `;
+
+                try {
+                    await sendEmail({
+                        email: userExists.email,
+                        subject: 'NextStep - Verify your email',
+                        message,
+                    });
+
+                    return res.status(200).json({
+                        message: 'OTP resent to your email. Please verify to login.',
+                        email: userExists.email,
+                    });
+                } catch (error) {
+                    return res.status(500).json({ message: 'Email could not be sent. Please try again.' });
+                }
+            }
+
+    
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Hash password
+       
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Prepare user data
-        const userData = {
+       
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = Date.now() + 10 * 60 * 1000; // Expires in 10 minutes
+
+       
+        const user = await User.create({
             fullName,
             email,
             password: hashedPassword,
             role,
-            domainInterest: domainInterest || [],
-        };
-
-        // Add mentor fields if role is teacher
-        if (role === 'teacher') {
-            userData.expertise = expertise;
-            userData.experience = experience;
-            userData.domain = domain;
-            userData.linkedin = linkedin;
-            userData.github = github;
-            userData.whyMentor = whyMentor;
-        }
-        // Add learner fields if role is student
-        if (role === 'student') {
-            userData.college = college;
-            userData.gradYear = gradYear;
-            userData.domain = domain;
-        }
-
-        // Create user
-        const user = await User.create(userData);
-
-        // If user is a teacher, create a mentor record
-        if (role === 'teacher') {
-            const mentorData = {
-                userId: user._id,
-                name: fullName,
-                role: expertise,
-                company: 'Independent', // Default value
-                avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=6366f1&color=fff`,
-                domain: domain,
-                hourlyRate: 0, // Default value
-                bio: whyMentor || 'No bio provided',
-                skills: [expertise], // Add expertise as a skill
-                rating: 0,
-                sessions: 0
-            };
-
-            try {
-                const mentor = await Mentor.create(mentorData);
-                console.log('Created mentor record:', mentor); // Debug log
-            } catch (mentorError) {
-                console.error('Error creating mentor record:', mentorError);
-                // If mentor creation fails, delete the user and return error
-                await User.findByIdAndDelete(user._id);
-                return res.status(500).json({
-                    message: 'Failed to create mentor profile',
-                    error: mentorError.message
-                });
-            }
-        }
+            otp,
+            otpExpires,
+            ...otherData 
+        });
 
         if (user) {
-            res.status(201).json({
+          
+            if (role === 'teacher') {
+                await Mentor.create({
+                    userId: user._id,
+                    name: fullName,
+                    role: otherData.expertise || 'Mentor',
+                    company: otherData.company || 'Freelance',
+                    avatar: otherData.avatar || '/images/mentors/default.jpg',
+                    bio: otherData.whyMentor || '',
+                    skills: otherData.expertise ? [otherData.expertise] : [],
+                    linkedin: otherData.linkedin || '',
+                    github: otherData.github || ''
+                });
+            }
+
+            
+            const message = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px;">
+            <h2 style="color: #8B4513;">Welcome to NextStep!</h2>
+            <p>Hi ${user.fullName},</p>
+            <p>Thank you for signing up. Please use the OTP below to verify your email address:</p>
+            <h1 style="color: #333; letter-spacing: 5px;">${otp}</h1>
+            <p>This code expires in 10 minutes.</p>
+          </div>
+        </div>
+      `;
+
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'NextStep - Verify your email',
+                    message,
+                });
+
+                res.status(201).json({
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    message: 'OTP sent to your email. Please verify to login.',
+                });
+            } catch (error) {
+              
+                await User.findByIdAndDelete(user._id);
+                res.status(500).json({ message: 'Email could not be sent. Please try again.' });
+            }
+        } else {
+            res.status(400).json({ message: 'Invalid user data' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+
+export const verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+     
+        if (user.otp === otp && user.otpExpires > Date.now()) {
+
+           
+            user.isVerified = true;
+            user.otp = undefined;       
+            user.otpExpires = undefined; 
+            await user.save();
+
+          
+            res.json({
                 _id: user._id,
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id)
+                token: generateToken(user._id),
+                isVerified: true
             });
+
+        } else {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
+
     } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({
-            message: 'Registration failed',
-            error: error.message
-        });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// Login user
+
 export const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
-        const { email, password } = req.body;
 
-        // Validation
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide email and password' });
-        }
-
-        // Find user
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Check password
+      
+        if (!user.isVerified) {
+            return res.status(401).json({ message: 'Please verify your email first' });
+        }
+
+        
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+
+       
+        const token = generateToken(user._id);
 
         res.json({
             _id: user._id,
             fullName: user.fullName,
             email: user.email,
             role: user.role,
-            token: generateToken(user._id),
-            // Include mentor-specific fields if the user is a mentor
-            ...(user.role === 'teacher' && {
-                expertise: user.expertise,
-                experience: user.experience,
-                domain: user.domain,
-                linkedin: user.linkedin,
-                github: user.github,
-                whyMentor: user.whyMentor,
-            }),
-            // Include learner-specific fields if the user is a learner (optional)
-            ...(user.role === 'student' && {
-                college: user.college,
-                gradYear: user.gradYear,
-                // domain is already included above if populated on user object
-            })
+            token,
         });
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({
-            message: 'Login failed',
-            error: error.message
-        });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
+
+export const getCurrentUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+
 export const updateUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user.id);
 
-        if (user) {
-            user.fullName = req.body.fullName || user.fullName;
-            user.email = req.body.email || user.email; // Consider validation if email changes
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-            // Update mentor-specific fields if user is a teacher
-            if (user.role === 'teacher') {
-                user.expertise = req.body.expertise || user.expertise;
-                user.experience = req.body.experience !== undefined ? req.body.experience : user.experience;
-                user.domain = req.body.domain || user.domain;
-                user.linkedin = req.body.linkedin !== undefined ? req.body.linkedin : user.linkedin;
-                user.github = req.body.github !== undefined ? req.body.github : user.github;
-                user.whyMentor = req.body.whyMentor !== undefined ? req.body.whyMentor : user.whyMentor;
-            }
+      
+        user.fullName = req.body.fullName || user.fullName;
+        user.email = req.body.email || user.email;
 
-            // Update learner-specific fields if user is a student (optional for mentor dashboard focus)
-            if (user.role === 'student') {
-                user.college = req.body.college || user.college;
-                user.gradYear = req.body.gradYear !== undefined ? req.body.gradYear : user.gradYear;
-                // domain is already handled above
-            }
+        
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(req.body.password, salt);
+        }
 
-            // Update domain interests (if applicable, e.g., from a multi-select)
-            if (req.body.domainInterest !== undefined) {
-                user.domainInterest = req.body.domainInterest;
-            }
+        
+        if (user.role === 'teacher') {
+            user.expertise = req.body.expertise || user.expertise;
+            user.experience = req.body.experience || user.experience;
+            user.domain = req.body.domain || user.domain;
+            user.linkedin = req.body.linkedin || user.linkedin;
+            user.github = req.body.github || user.github;
+            user.whyMentor = req.body.whyMentor || user.whyMentor;
+        } else if (user.role === 'student') {
+            user.college = req.body.college || user.college;
+            user.gradYear = req.body.gradYear || user.gradYear;
+        }
 
-            // Update password if provided
-            if (req.body.password) {
-                const salt = await bcrypt.genSalt(10);
-                user.password = await bcrypt.hash(req.body.password, salt);
-            }
+    
+        if (req.body.domainInterest) {
+            user.domainInterest = req.body.domainInterest;
+        }
 
-            const updatedUser = await user.save();
+        const updatedUser = await user.save();
 
-            res.json({
-                _id: updatedUser._id,
-                fullName: updatedUser.fullName,
-                email: updatedUser.email,
-                role: updatedUser.role,
+        res.json({
+            _id: updatedUser._id,
+            fullName: updatedUser.fullName,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            ...(updatedUser.role === 'teacher' && {
                 expertise: updatedUser.expertise,
                 experience: updatedUser.experience,
                 domain: updatedUser.domain,
                 linkedin: updatedUser.linkedin,
                 github: updatedUser.github,
                 whyMentor: updatedUser.whyMentor,
+            }),
+            ...(updatedUser.role === 'student' && {
                 college: updatedUser.college,
                 gradYear: updatedUser.gradYear,
-                domainInterest: updatedUser.domainInterest,
-            });
-
-        } else {
-            res.status(404).json({ message: 'User not found' });
-        }
+            }),
+            domainInterest: updatedUser.domainInterest,
+        });
     } catch (error) {
-        console.error('Error updating user profile:', error);
+        console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// Get current user
-export const getCurrentUser = async (req, res) => {
+
+export const getLearnerSessions = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
+        const sessions = await SessionBooking.find({
+            learnerId: req.user._id
+        })
+            .select('-__v -createdAt -updatedAt')
+            .populate({
+                path: 'mentorId',
+                select: 'name avatar',
+            })
+            .sort({ date: -1 })
+            .lean();
+
+        const formattedSessions = sessions.map(session => ({
+            ...session,
+            link: session.link || null,
+        }));
+
+        res.status(200).json(formattedSessions);
     } catch (error) {
-        console.error('Get current user error:', error);
-        res.status(500).json({ message: 'Error fetching user data' });
+        console.error('Error fetching learner sessions:', error);
+        res.status(500).json({
+            message: 'Error fetching your sessions',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
-export const getLearnerSessions = async (req, res) => {
-  try {
-    const sessions = await SessionBooking.find({ 
-      learnerId: req.user._id 
-    })
-    .select('-__v -createdAt -updatedAt') // Exclude unnecessary fields
-    .populate({
-      path: 'mentorId',
-      select: 'name avatar', // Include only necessary mentor fields
-    })
-    .sort({ date: -1 }) // Show newest first
-    .lean(); // Convert to plain JavaScript objects for better performance
 
-    // Ensure the link field is included and properly formatted
-    const formattedSessions = sessions.map(session => ({
-      ...session,
-      link: session.link || null, // Ensure link is always included, even if null
-    }));
 
-    res.status(200).json(formattedSessions);
-  } catch (error) {
-    console.error('Error fetching learner sessions:', error);
-    res.status(500).json({ 
-      message: 'Error fetching your sessions',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-// @desc    Get all messages for the logged-in learner
-// @route   GET /api/users/my-messages
-// @access  Private (Student)
 export const getLearnerMessages = async (req, res) => {
-  try {
-    const messages = await Message.find({ learnerId: req.user._id })
-      .populate({
-        path: 'mentorId',
-        model: 'Mentor', // Explicitly state the model
-        select: 'name avatar', // Get mentor's name and avatar
-      })
-      .sort({ updatedAt: -1 }); // Show recently replied-to first
+    try {
+        const messages = await Message.find({ learnerId: req.user._id })
+            .populate({
+                path: 'mentorId',
+                model: 'Mentor',
+                select: 'name avatar',
+            })
+            .sort({ updatedAt: -1 });
 
-    res.status(200).json(messages);
-  } catch (error) {
-    console.error('Error fetching learner messages:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// Generate JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d'
-    });
+        res.status(200).json(messages);
+    } catch (error) {
+        console.error('Error fetching learner messages:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
 
 
+export const replyToLearnerMessage = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const { text } = req.body;
+
+        if (!text || typeof text !== 'string' || text.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Message text is required and cannot be empty'
+            });
+        }
+
+        const message = await Message.findOne({
+            _id: conversationId,
+            learnerId: req.user._id,
+        });
+
+        if (!message) {
+            return res.status(404).json({
+                success: false,
+                message: 'Conversation not found or you do not have permission to reply to this conversation'
+            });
+        }
+
+        const newMessage = {
+            from: 'learner',
+            text: text.trim(),
+            timestamp: new Date()
+        };
+
+        message.messages.push(newMessage);
+        await message.save();
+
+        const populatedMessage = await Message.findById(message._id)
+            .populate({
+                path: 'mentorId',
+                model: 'Mentor',
+                select: 'name avatar',
+            })
+            .populate('learnerId', 'fullName email');
+
+        res.status(200).json({
+            success: true,
+            message: 'Reply sent successfully',
+            data: {
+                ...populatedMessage.toObject(),
+                newMessage
+            }
+        });
+    } catch (error) {
+        console.error('Error sending learner message reply:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send reply',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};

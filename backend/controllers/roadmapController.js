@@ -23,7 +23,7 @@ export const createRoadmap = async(req, res) => {
         res.status(500).json({message: 'server error', error: err.message});
     }
 };
-//get all roadmaps
+
 export const getAllRoadmaps = async (req, res) => {
     try {
       const roadmaps = await Roadmap.find();
@@ -32,7 +32,7 @@ export const getAllRoadmaps = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: err.message });
     }
   };
-// get roadmap by domain 
+ 
 export const getRoadmapsByDomain = async(req, res) => {
     try{
         const {domain} = req.params;

@@ -9,7 +9,7 @@ const MentorCard = ({ mentor }) => {
   const [imgError, setImgError] = useState(false);
 
   const handleBookSession = () => {
-    console.log('Opening booking modal for mentor:', mentor); // Debug log
+    console.log('Opening booking modal for mentor:', mentor); 
     setIsBookingModalOpen(true);
   };
 
@@ -101,7 +101,7 @@ const MentorCard = ({ mentor }) => {
         onClose={() => setIsBookingModalOpen(false)}
         mentor={{
           ...mentor,
-          _id: mentor._id // Ensure we have the correct ID
+          _id: mentor._id 
         }}
       />
 

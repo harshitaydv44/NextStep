@@ -12,18 +12,18 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
-// Environment Variables
+
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nextstep';
 const PORT = process.env.PORT || 5000;
 let currentPort = PORT;
 const MAX_PORT_RETRIES = 5;
 let portRetries = 0;
 
-// MongoDB Connection with Retry
+
 const connectWithRetry = async () => {
     console.log('Attempting to connect to MongoDB...');
     try {
@@ -41,7 +41,7 @@ const connectWithRetry = async () => {
 
 connectWithRetry();
 
-// MongoDB Connection Events
+
 mongoose.connection.on('connected', () => {
     console.log('MongoDB connection established successfully');
 });
@@ -52,13 +52,13 @@ mongoose.connection.on('disconnected', () => {
     console.log('MongoDB connection disconnected');
 });
 
-// Routes
+
 app.use('/api/users', userRoutes);
 app.use('/api/mentors', mentorRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
 app.use('/api/mentor', mentorDashboardRoutes);
 
-// Health Check Route
+
 app.get('/', (req, res) => {
     res.json({
         message: 'Backend is running',
@@ -67,7 +67,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// Global Error Handler
+
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(500).json({
@@ -76,7 +76,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start Server with Retry on Port Conflict
+
 const startServer = () => {
     const server = app.listen(currentPort, () => {
         console.log(`Server is running on port ${currentPort}`);

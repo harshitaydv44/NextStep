@@ -19,22 +19,22 @@ const Contact = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Here you would typically send the form data to your backend
+      
         console.log('Form submitted:', formData);
-        // Reset form
+        
         setFormData({
             name: '',
             email: '',
             subject: '',
             message: ''
         });
-        // Show success message
+      
         alert('Thank you for your message! We will get back to you soon.');
     };
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Hero Section */}
+          
             <section className="bg-gradient-to-r from-primary-600 to-secondary-500 text-white py-20">
                 <div className="container mx-auto px-6 text-center">
                     <h1 className="text-4xl md:text-5xl font-bold mb-6">Get In Touch</h1>
@@ -44,11 +44,11 @@ const Contact = () => {
                 </div>
             </section>
 
-            {/* Contact Form and Info */}
+            
             <section className="py-16 px-6">
                 <div className="container mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Contact Form */}
+                        
                         <div className="bg-white rounded-xl shadow-md border border-gray-100 p-8">
                             <h2 className="text-2xl font-bold mb-6 text-gray-900">Send us a message</h2>
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,7 +128,7 @@ const Contact = () => {
                             </form>
                         </div>
 
-                        {/* Contact Information */}
+                       
                         <div>
                             <h2 className="text-2xl font-bold mb-6 text-gray-900">Contact Information</h2>
                             <p className="text-gray-600 mb-8">
