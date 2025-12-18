@@ -86,12 +86,7 @@ app.use((err, req, res, next) => {
 });
 
 
-const startServer = () => {
-    const server = app.listen(currentPort, () => {
-        console.log(`Server is running on port ${currentPort}`);
-        portRetries = 0;
-    });
-});
+
     const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
